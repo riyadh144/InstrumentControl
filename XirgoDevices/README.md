@@ -7,6 +7,11 @@ This Folder has the classes to control Xirgo Devices over serial protocol
 ```
 pip install Twisted
 ```
+##Serial
+```
+pip install pyserial
+```
+
 # Example of Use
 
 ```
