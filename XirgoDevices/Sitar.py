@@ -19,7 +19,7 @@ class Sitar(Serial):
 
         self.write_port("\r")
         time.sleep(.02)
-
+        # Telling Sitar Not to Sleep
         self.write_port("!npakas\r")
         self.write_port("\r")
         self.write_port("!npakas\r")
@@ -46,28 +46,13 @@ class Sitar(Serial):
         self.write_port("!ic:5\r")
 
     def getSerial(self,countFail):
-        self.write_port("\r")
-        self.write_port("\r")
-        self.write_port("\r")
-
-        time.sleep(.02)
-
-        self.write_port("!xs\r")
-        time.sleep(.05)
-
-        string = self.read_foo()
-
-        if ('SERIALSTR: ' in string):
-            return (string.split('SERIALSTR: ')[1].split('\r')[0])
-        elif(countFail>1):
-            return self.getSerial(countFail-1)
+        return self.get_value("!xs", "SERIALSTR: ",4)
 
 
-
-
-    def get_value(self,command,thing_before_it,countFail):
+    def get_value(self,command,thing_before_it,countFail): # this is a general command that can be used to construct mroe specific functions
         self.write_port("\r")
         time.sleep(.05)
+        # this will be used for SITAR as it fails to take the whole word at low temps so it needs to be feed character by charachter
         # for c in command:
         #     self.write_port(c)
         #     time.sleep(.1)
@@ -96,10 +81,8 @@ class Sitar(Serial):
         self.write_port("\r")
         time.sleep(.02)
         self.write_port("!rp:*")
-
         self.write_port("\r")
         time.sleep(.02)
-
         string = self.read_foo()
 
     def checkGPS(self):
