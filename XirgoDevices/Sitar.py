@@ -45,7 +45,7 @@ class Sitar(Serial):
     def test_OUT1Open(self):
         self.write_port("!ic:5\r")
 
-    def getSerial(self,countFail):
+    def getSerial(self):
         return self.get_value("!xs", "SERIALSTR: ",4)
 
 
@@ -61,6 +61,8 @@ class Sitar(Serial):
         time.sleep(.07)
         string = self.read_foo()
         if (thing_before_it in string):
+            after=string.split(thing_before_it)[1]
+            before_the_return=after.split['r'][0]
             return (string.split(thing_before_it)[1].split('\r')[0])
         elif (countFail > 1):
             return self.get_value(command,thing_before_it,countFail - 1)
@@ -104,3 +106,4 @@ class Sitar(Serial):
         time.sleep(3)
         self.write_port("Xpd\r")
         print(self.read_foo().split('Voltage{VoltageMain}:')[1].split('\r')[0])
+

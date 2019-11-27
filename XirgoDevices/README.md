@@ -1,21 +1,29 @@
 # Description
 This Folder has the classes to control Xirgo Devices over serial protocol
+For now only sitar is made but the rest of them can be implemented just as easily
 
 # Dependencies
 
 ## Twisted
 ```
+#Install from command line
 pip install Twisted
+#import in a python program
+import twisted
 ```
-##Serial
+## Serial
 ```
+#Install from command line
 pip install pyserial
+#import in a python program
+import pyserial
 ```
 
 # Example of Use
 
 ```
-#depending on how many devices you have in your setup you will creat a new variable that initializes an object identified by its com port.
+#depending on how many devices you have in your setup you will create
+#a new variable that initializes an object identified by its com port.
 sitar1= Sitar("COM1") #Depending on your OS this could be dev/ttyUSB0
 sitar2= Sitar("COM2")
 

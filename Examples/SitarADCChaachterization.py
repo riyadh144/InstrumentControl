@@ -1,11 +1,11 @@
-
+import time
+import numpy as np
 from pyvisa import ResourceManager
 # import Chamber123C
 # import PSU832
 # import Key34461A
 # import Sitar
-import time
-import numpy as np
+
 #To run the script from another folder then you need to import the module with the commands below, uncomment those and comment the ones above.
 import Instruments.Chamber123C as Chamber123C
 import Instruments.Key34461A as Key34461A
@@ -34,7 +34,7 @@ def sweep(function_to_read_device,
 
 rm = ResourceManager()
 # Initialize Communication With the Instruments, and creating their objects
-chamber = Chamber123C.ChamberOld("/dev/ttyUSB2", 1)
+chamber = Chamber123C.ChamberOld("/dev/ttyUSB2", 1)#COM1-100 IN WINDOWS
 chamber.set_baud_rate(9600)  # Setting the baudrate of the Chamber
 psu = PSU832.PSU832("TCPIP0::192.168.1.74::INSTR", rm)  # Connection over ethernet
 dmm = Key34461A.Key34461a("TCPIP0::192.168.1.56::INSTR", rm)  # Connection over ethernet
@@ -60,8 +60,8 @@ print(dmm.idn())
 
 # Check communication with our devices
 
-s1 = sitar1.getSerial(4)
-s2 = sitar2.getSerial(4)
+s1 = sitar1.getSerial()
+s2 = sitar2.getSerial()
 time.sleep(1)
 print(s1)
 print(s2)
@@ -72,7 +72,9 @@ sitar1.getADCs(1)
 # chamber.temp_soak(-40,2*60*60)
 
 for temp in range(-20, 70, 5):
-	if temp != -20:
+	if temp == -20:
+		chamber.temp_soak(temp, 2 * 60 * 60)
+	else:
 		chamber.temp_soak(temp, .5 * 60 * 60)
 
 	# sweep bat voltage

@@ -40,18 +40,18 @@ class Key34461a:
         return self.dmm.query("*IDN?") # this is equivelent to initialize trig and fetch at the same time, but it will return as many readings as you had set in sample_countz
 
 #Example of Usage
-# rm = ResourceManager()
-# dmm=Key34461a("TCPIP0::192.168.1.56::INSTR",rm)
-# dmm.set_voltage_dc_range(10,5)
-# dmm.sample_count(10)
-# print(dmm.read())
-# dmm.initialize_reading()
-# dmm.set_trig_source("BUS")
-# dmm.take_measurment()
-# time.sleep(1)
-# print(dmm.read_triggered_measurment())
-# print(dmm.read())
-# print(dmm.read())
-# print(dmm.read())
+rm = ResourceManager()
+dmm=Key34461a("TCPIP0::192.168.1.56::INSTR",rm)
+dmm.set_voltage_dc_range(10,5)
+dmm.sample_count(1000)
+print(dmm.read())
+dmm.initialize_reading()
+dmm.set_trig_source("BUS")
+dmm.take_measurment()
+time.sleep(1)
+print(dmm.read_triggered_measurment())
+print(dmm.read())
+print(dmm.read())
+print(dmm.read())
 
 

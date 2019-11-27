@@ -5,21 +5,30 @@ This Folder has the classes to control some of the instruments in the lab
 
 ## miminalmodbus
 ```
+#Install from command line
 pip install minimalmodbus
+#import in a python program
+import minimalmodbus
 ```
-##pySerial
+## pySerial
 ```
+#Install from command line
 pip install pyserial
+#import in a python program
+import serial
 ```
-##pyvisa
+## pyvisa
 ```
-pip install pyserial
+#Install from command line
+pip install pyvisa
+#import in a python program
+import visa
+
 ```
 
 # Example of Use
 
 ```
-#Example of Usage
 voltages=[]
 rm= ResourceManager()# you define the resource manager that is one resource manager per whole script, one resource manager is responsible for many different instruments
 dmm=Key34461a("TCPIP0::192.168.1.56::INSTR",rm) # here you create an  Keysight dmm object which has a TCPIP identifier and is manager by the resource manager already defined
