@@ -1,33 +1,32 @@
-# $language = "Python"
-# $interface = "1.0"
+#$language = "Python"
+#$interface = "1.0"
 import time
+import AES
 import re
-
-tab = crt.GetScriptTab()
-scr = tab.Screen
 
 
 def cmd(scr, pre_wait, cmdstr, post_wait):
-	if (pre_wait > 0.0):
-		time.sleep(pre_wait)
-	scr.Send(cmdstr + '\r')
-	if (post_wait > 0.0):
-		time.sleep(post_wait)
+    if (pre_wait > 0.0):
+        time.sleep(pre_wait)
+    scr.Send(cmdstr + '\r')
+    if (post_wait > 0.0):
+        time.sleep(post_wait)
 
-
-def xmodem_upload_wait_for_finish(scr, crt, cmd_to_start_upload, string_to_wait_before_upload, delay_before_upload,
-								  file_to_upload, string_to_wait_for, time_to_wait_after_string):
-	cmd(scr, 0.5, cmd_to_start_upload, 2)
+def xmodem_upload_wait_for_finish(scr,crt, cmd_to_start_upload,string_to_wait_before_upload,delay_before_upload,file_to_upload, string_to_wait_for, time_to_wait_after_string ):
+	scr.Synchronous = True
+	cmd(scr, 0.5, cmd_to_start_upload, 0.0)
 	reswait(scr, string_to_wait_before_upload, delay_before_upload)
+	scr.Synchronous = False
 
 	crt.FileTransfer.SendXmodem(file_to_upload)
-
+	scr.Synchronous = True
 	reswait(scr, string_to_wait_for, 1)
-
+	scr.Synchronous = False
 	time.sleep(time_to_wait_after_string)
 
 
-def read_from_file_and_send(file, crt):
+def read_from_file_and_send(file,crt):
+
 	crt.Screen.Synchronous = True
 	# Note: A IOError exception will be generated if 'input.txt' doesn't exist.
 	#
@@ -38,38 +37,31 @@ def read_from_file_and_send(file, crt):
 
 		# Wait for my prompt before sending the next line
 		#
-		time.sleep(1)
+		crt.Screen.WaitForString(line)
 
 	crt.Screen.Synchronous = False
 
-
 def reswait(scr, resstr, wait):
-	return scr.WaitForString(resstr, wait)
+    return scr.WaitForString(resstr, wait)
 
 
-def get_info_with_line_starting_with(scr, cmd_to_query, start_of_parameters_array):
-	scr.Clear()
+def get_info_with_line_starting_with(scr,cmd_to_query,start_of_parameters_array):
+	scr.clear()
 	sync_mem = scr.Synchronous
-
+	scr.Synchronous = True
 	cmd(scr, 0.5, cmd_to_query, 0.0)
-	all_on_screen = scr.ReadString("OK")
-
-	results = []
-	# cmd(scr,0.1,all_on_screen,0.1)
-
-	for params in start_of_parameters_array:
-		results.append(re.search("(?<=" + params + ").*", all_on_screen).group().strip("\r").strip(" ").encode("ascii"))
-	# cmd(scr,0.1,re.findall("(?<="+params+")",all_on_screen)[0],.1)
+	all_on_screen : str =scr.get()
+	results=[]
+	for params in start_of_parameters_array :
+		results.append(re.findall("(?<="+params+")",scr.get()))
+	scr.Synchronous = False
 
 	return results
-
-
-def append_to_results_to_csv_file(file, parameters):
+def append_to_results_to_csv_file(file,parameters):
 	f = open(file, "a")
 	for params in parameters:
-		f.write(params + ",")
+		f.write(params+",")
 	f.write("\n")
-
 
 def aes_login(scr):
 	DEFAULT_KEY = [
@@ -117,26 +109,3 @@ def aes_login(scr):
 
 	''' restore Screen Object properties '''
 	scr.Synchronous = sync_mem
-
-
-parameters = []
-cmd(scr, .1, "!mcs:3,22,1\r", .1)
-cmd(scr, .1, "!nx\r", 7)
-cmd(scr, .1, "!mcs:19,8003\r", 5)
-x = (get_info_with_line_starting_with(scr, "!xs\r", ["DSN:"]))
-parameters.append(x[0])
-xmodem_upload_wait_for_finish(scr, crt, "!uf:30\r", "Waiting for Xmodem Start (Ctrl-D twice to cancel)", 2,
-							  "/home/quanta/OneDrive/XirgoTech/CustomerSamples/allwest/11252019/truststore/" + "XT2469-" + str(
-								  parameters[0]) + "-TRUSTSTORE.BIN", "Xmodem Done (0)", 2)
-
-cmd(scr, 5, "!gcc\r", 15)
-cmd(scr, .1, "!mcs:3,22,0\r", .1)
-cmd(scr, .1, "!xs\r", .1)
-x = get_info_with_line_starting_with(scr, "!gpd\r", ["IMEI:", "CCID:"])
-parameters.append(x[0])
-parameters.append(x[1])
-
-read_from_file_and_send("/home/quanta/OneDrive/XirgoTech/CustomerSamples/allwest/11252019/Configs", crt)
-append_to_results_to_csv_file("/home/quanta/OneDrive/XirgoTech/CustomerSamples/allwest/11252019/11252019allwest",
-							  parameters)
-cmd(scr, .5, "!nx\r", .1)
